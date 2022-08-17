@@ -38,16 +38,16 @@ function App() {
   }
 
   // Check Answer
-  const checkAnswer = (e) => {
+  const checkAnswer = (event, selected) => {
     if (!selectedAnswer) {
-      console.log(!selectedAnswer);
       setCorrectAnswer(question.answer);
-      setSelectedAnswer(e.target.value);
+      setSelectedAnswer(selected);
 
-      if (e.target.value === question.answer) {
+      if (selected === question.answer) {
+        event.target.classList.add('bg-success');
         setMarks(marks + 5);
       } else {
-        e.target.nextSibling.style.background = '#ff0000';
+        event.target.classList.add('bg-danger');
       }
     }
   }
@@ -56,8 +56,10 @@ function App() {
   const nextQuestion = () => {
     setCorrectAnswer('');
     setSelectedAnswer('');
-    const labels = document.querySelectorAll('label');
-    labels?.forEach(item => item.style.background = '#333333');
+    const wrongBtn = document.querySelector('button.bg-danger');
+    wrongBtn?.classList.remove('bg-danger');
+    const rightBtn = document.querySelector('button.bg-success');
+    rightBtn?.classList.remove('bg-success');
     setQuestionIndex(questionIndex + 1);
   }
 
@@ -77,8 +79,10 @@ function App() {
     setSelectedAnswer('');
     setQuestionIndex(0);
     setMarks(0);
-    const labels = document.querySelectorAll('label');
-    labels?.forEach(item => item.style.background = '#333333');
+    const wrongBtn = document.querySelector('button.bg-danger');
+    wrongBtn?.classList.remove('bg-danger');
+    const rightBtn = document.querySelector('button.bg-success');
+    rightBtn?.classList.remove('bg-success');
   }
 
   return (
