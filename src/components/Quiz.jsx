@@ -26,7 +26,7 @@ const Quiz = ({
               style={{ background: "#3d3d3d", borderColor: "#646464" }}
             >
               <div className="d-flex justify-content-between gap-md-3">
-                <h5 className="mb-2 fs-normal lh-base">{question?.question}</h5>
+                <h5 className="mb-2 fs-normal lh-base">{question?.caption}</h5>
                 <h5
                   style={{
                     color: "#60d600",
@@ -34,11 +34,12 @@ const Quiz = ({
                     textAlign: "right",
                   }}
                 >
-                  {quizs.indexOf(question) + 1} / {quizs?.length}
+                  {quizs.indexOf(question)} / {quizs?.length - 2}
                 </h5>
               </div>
               <div>
-                {question?.options?.map((item, index) => (
+                <h5>{question.label}</h5>
+                {/* {question?.options?.map((item, index) => (
                   <button
                     key={index}
                     className={`option w-100 text-start btn text-white py-2 px-3 mt-3 rounded btn-dark ${
@@ -46,10 +47,20 @@ const Quiz = ({
                     }`}
                     onClick={(event) => checkAnswer(event, item)}
                   >
-                    {/* <DiscreteSlider values={question.values} /> */}
                     {item}
                   </button>
-                ))}
+                ))} */}
+                {/* {question?.options?.map((item, index) => (
+                  <button
+                    key={index}
+                    className={`option w-100 text-start btn text-white py-2 px-3 mt-3 rounded btn-dark ${
+                      correctAnswer === item && "bg-success"
+                    }`}
+                    onClick={(event) => checkAnswer(event, item)}
+                  >
+                    {item}
+                  </button>
+                ))} */}
               </div>
 
               {questionIndex + 1 !== quizs.length ? (
@@ -59,7 +70,7 @@ const Quiz = ({
                   <button
                     className="btn py-2 w-100 mt-3 bg-primary text-light fw-bold"
                     onClick={nextQuestion}
-                    disabled={!selectedAnswer}
+                    // disabled={!selectedAnswer}
                   >
                     Next Question
                   </button>

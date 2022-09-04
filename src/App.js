@@ -8,7 +8,7 @@ function App() {
   // All Quizs, Current Question, Index of Current Question, Answer, Selected Answer, Total Marks
   const [quizs, setQuizs] = useState([]);
   const [question, setQuesion] = useState({});
-  const [questionIndex, setQuestionIndex] = useState(0);
+  const [questionIndex, setQuestionIndex] = useState(1);
   const [correctAnswer, setCorrectAnswer] = useState("");
   const [selectedAnswer, setSelectedAnswer] = useState("");
 
@@ -20,17 +20,17 @@ function App() {
   const [showResult, setShowResult] = useState(false);
 
   // Load JSON Data
-  useEffect(() => {
-    fetch("quiz.json")
-      .then((res) => res.json())
-      .then((data) => setQuizs(data));
-  }, []);
-
   // useEffect(() => {
-  //   fetch("quiz-data.json")
+  //   fetch("quiz.json")
   //     .then((res) => res.json())
-  //     .then((data) => setQuizs(data.pages));
+  //     .then((data) => setQuizs(data));
   // }, []);
+
+  useEffect(() => {
+    fetch("quiz-data.json")
+      .then((res) => res.json())
+      .then((data) => setQuizs(data.pages));
+  }, []);
 
   // Set a Single Question
   useEffect(() => {
