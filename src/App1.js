@@ -108,9 +108,9 @@ function App() {
                 {pageContent.bodyBold && (
                   <div className="body-bold">{renderPartnerResults()}</div>
                 )}
-                <div className="label" style={{ margin: 50 }}>
+                <h3 className="label" style={{ margin: 50 }}>
                   {pageContent.label}
-                </div>
+                </h3>
                 {pageContent.options && (
                   <div
                     style={{
@@ -166,7 +166,12 @@ function App() {
                   </div>
                 )}
                 {pageContent.done && (
-                  <button onClick={handleNextClick}>{pageContent.done}</button>
+                  <button
+                    className="btn py-2 w-100 mt-3 bg-primary text-light fw-bold"
+                    onClick={handleNextClick}
+                  >
+                    {pageContent.done}
+                  </button>
                 )}
               </div>
             </div>
