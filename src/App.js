@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import Start from "./components/Start";
 import Quiz from "./components/Quiz";
 import Result from "./components/Result";
-import DiscreteSliderMarks from "./components/Slider";
 
 function App() {
   // All Quizs, Current Question, Index of Current Question, Answer, Selected Answer, Total Marks
