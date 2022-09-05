@@ -11,8 +11,13 @@ function App() {
   const [questionIndex, setQuestionIndex] = useState(1);
   const [correctAnswer, setCorrectAnswer] = useState("");
   const [selectedAnswer, setSelectedAnswer] = useState("");
+  const [firstValue, setFirstValue] = useState(0);
+  const [secondValue, setSecondValue] = useState(0);
+  const [myChosenValue, setMyChosenValue] = useState([]);
+  const [notMyChosenValue, setNotMyChosenValue] = useState([]);
 
   const [marks, setMarks] = useState(0);
+  const [partnersMarks, setPartnersMarks] = useState(0);
 
   // Display Controlling States
   const [showStart, setShowStart] = useState(true);
@@ -40,6 +45,19 @@ function App() {
     }
   }, [quizs, questionIndex]);
 
+  const transmitMyChoice = (event) => {
+    setFirstValue(event.target.value);
+
+    // console.log(event.target.value);
+    // console.log("Мой вібор", myChosenValue);
+  };
+
+  const transmitChoice = (event) => {
+    setSecondValue(event.target.value);
+    // console.log(event.target.value);
+    // console.log("Выбор партнера", notMyChosenValue);
+  };
+
   // Start Quiz
   const startQuiz = () => {
     setShowStart(false);
@@ -61,6 +79,21 @@ function App() {
     }
   };
 
+  //Count result
+  const findMostOftenElement = (arr) => {
+    const reps = arr.reduce((accum, item) => {
+      const newCount = (accum[item] || 0) + 1;
+      return { ...accum, [item]: newCount };
+    }, {});
+    const maxTimes = Math.max.apply(null, Object.values(reps));
+    const [recordItem] = Object.entries(reps).find(
+      ([, val]) => val === maxTimes
+    );
+
+    // console.log(recordItem + " ( " + maxTimes + " times ) ");
+    return recordItem;
+  };
+
   // Next Quesion
   const nextQuestion = () => {
     setCorrectAnswer("");
@@ -70,6 +103,10 @@ function App() {
     const rightBtn = document.querySelector("button.bg-success");
     rightBtn?.classList.remove("bg-success");
     setQuestionIndex(questionIndex + 1);
+    setMyChosenValue([...myChosenValue, firstValue]);
+    setNotMyChosenValue([...notMyChosenValue, secondValue]);
+    console.log(myChosenValue);
+    console.log(notMyChosenValue);
   };
 
   // Show Result
@@ -77,6 +114,8 @@ function App() {
     setShowResult(true);
     setShowStart(false);
     setShowQuiz(false);
+    setMarks(findMostOftenElement(myChosenValue));
+    setPartnersMarks(findMostOftenElement(notMyChosenValue));
   };
 
   // Start Over
@@ -88,6 +127,8 @@ function App() {
     setSelectedAnswer("");
     setQuestionIndex(0);
     setMarks(0);
+    setMyChosenValue([]);
+    setNotMyChosenValue([]);
     const wrongBtn = document.querySelector("button.bg-danger");
     wrongBtn?.classList.remove("bg-danger");
     const rightBtn = document.querySelector("button.bg-success");
@@ -110,6 +151,9 @@ function App() {
         questionIndex={questionIndex}
         nextQuestion={nextQuestion}
         showTheResult={showTheResult}
+        transmitMyChoice={transmitMyChoice}
+        transmitChoice={transmitChoice}
+        oftenGoal={findMostOftenElement}
       ></Quiz>
 
       {/* Result Page */}
@@ -117,7 +161,10 @@ function App() {
         showResult={showResult}
         quizs={quizs}
         marks={marks}
+        partnersMarks={partnersMarks}
         startOver={startOver}
+        myValue={myChosenValue}
+        partnerValue={notMyChosenValue}
       />
     </>
   );

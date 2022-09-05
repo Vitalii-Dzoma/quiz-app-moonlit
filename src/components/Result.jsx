@@ -1,6 +1,21 @@
 import React from "react";
 
-const Result = ({ showResult, quizs, marks, startOver }) => {
+const Result = ({
+  showResult,
+  quizs,
+  marks,
+  partnersMarks,
+  startOver,
+  myValue,
+  partnerValue,
+}) => {
+  let x = 0;
+
+  const resultText = quizs?.find((ob) => {
+    if (ob.label === "Your Initial Results") return ob;
+  });
+  console.log(partnersMarks);
+
   return (
     <section
       className="bg-dark text-white"
@@ -15,10 +30,14 @@ const Result = ({ showResult, quizs, marks, startOver }) => {
               }`}
             >
               <h1 className="mb-2 fw-bold">
+                {myValue.map((i) => (x += i)).reverse()[0]}
                 {marks > (quizs.length * 5) / 2 ? "Awesome!" : "Oops!"}
               </h1>
               <h3 className="mb-3 fw-bold">
-                Your score is {marks} out of {quizs.length * 5}
+                Your total score was {myValue.map((i) => (x += i)).reverse()[0]}{" "}
+                and your most common score was {marks}. Your partner score is{" "}
+                {partnerValue.map((i) => (x += i)).reverse()[0]} and your most
+                common score was {partnersMarks}.{/* {quizs.length * 5} */}
               </h3>
 
               <button

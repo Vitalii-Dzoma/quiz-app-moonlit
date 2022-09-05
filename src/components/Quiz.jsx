@@ -1,6 +1,8 @@
 import React from "react";
 import DiscreteSliderMarks from "./Slider";
 import DiscreteSliderMarks1 from "./Slider1";
+import { useState } from "react";
+
 const Quiz = ({
   showQuiz,
   question,
@@ -11,7 +13,9 @@ const Quiz = ({
   questionIndex,
   nextQuestion,
   showTheResult,
+  transmitMyChoice,
   transmitChoice,
+  oftenGoal,
 }) => {
   return (
     <section
@@ -65,8 +69,8 @@ const Quiz = ({
 
               {questionIndex + 1 !== quizs.length ? (
                 <>
-                  <DiscreteSliderMarks />
-                  <DiscreteSliderMarks1 />
+                  <DiscreteSliderMarks transmitMyChoice={transmitMyChoice} />
+                  <DiscreteSliderMarks1 transmitChoice={transmitChoice} />
                   <button
                     className="btn py-2 w-100 mt-3 bg-primary text-light fw-bold"
                     onClick={nextQuestion}
@@ -79,7 +83,7 @@ const Quiz = ({
                 <button
                   className="btn py-2 w-100 mt-3 bg-primary text-light fw-bold"
                   onClick={showTheResult}
-                  disabled={!selectedAnswer}
+                  // disabled={!selectedAnswer}
                 >
                   Show Result
                 </button>

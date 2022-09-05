@@ -1,8 +1,8 @@
 import * as React from "react";
 import Box from "@mui/material/Box";
 import Slider from "@mui/material/Slider";
-import { useState, useMemo } from "react";
 import debounce from "lodash/debounce";
+import { useState } from "react";
 // const [myMarks, setMyMarks] = useState([]);
 // const [partnerMarks, setPartnerMarks] = useState([]);
 const DEBOUNCE_DELAY = 3000;
@@ -34,20 +34,13 @@ const marks = [
   },
 ];
 
-const DiscreteSliderMarks1 = () => {
+const DiscreteSliderMarks1 = ({ transmitChoice }) => {
   const [value, SetValue] = useState(0);
-  const [notMyChosenValue, setNotMyChosenValue] = useState([]);
 
   //   const debouncedChangeHandler = useMemo(
   //     () => debounce((userInput) => fetchQuery(userInput), DEBOUNCE_DELAY),
   //     []
   //   );
-
-  const transmitChoice = (event) => {
-    setNotMyChosenValue([...notMyChosenValue, event.target.value]);
-    console.log(event.target.value);
-    console.log("Выбор партнера", notMyChosenValue);
-  };
 
   function valuestext(values) {
     SetValue(values);

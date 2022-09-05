@@ -34,15 +34,8 @@ const marks = [
   },
 ];
 
-const DiscreteSliderMarks = () => {
+const DiscreteSliderMarks = ({ transmitMyChoice }) => {
   const [value, SetValue] = useState(0);
-  const [myChosenValue, setMyChosenValue] = useState([]);
-
-  const transmitChoice = (event) => {
-    setMyChosenValue([...myChosenValue, event.target.value]);
-    console.log(event.target.value);
-    console.log("Мой вібор", myChosenValue);
-  };
 
   function valuestext(values) {
     SetValue(values);
@@ -60,7 +53,7 @@ const DiscreteSliderMarks = () => {
         max={7}
         valueLabelDisplay="auto"
         marks={marks}
-        onChange={debounce((event) => transmitChoice(event), DEBOUNCE_DELAY)}
+        onChange={debounce((event) => transmitMyChoice(event), DEBOUNCE_DELAY)}
       />
     </Box>
   );
