@@ -57,6 +57,7 @@ function App() {
     setPageNumber((prevState) => prevState + 1);
   };
 
+  //added lodash/fp reduce
   const getMostFrequent = (arr) => {
     const hashmap = reduce((acc, val) => {
       acc[val] = (acc[val] || 0) + 1;
