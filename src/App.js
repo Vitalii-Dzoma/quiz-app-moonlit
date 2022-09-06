@@ -34,9 +34,9 @@ function App() {
 
   const handleInputChange = (e, option) => {
     setSelectedOption(option);
+
     setSelectedOptionValue(e.target.value);
   };
-
   const handleInputPartnerChange = (e, option) => {
     setSelectedPartnerOption(option);
     setSelectedOptionPartnerValue(e.target.value);
@@ -45,18 +45,17 @@ function App() {
   const handleNextClick = () => {
     if (pageContent.options) {
       setTotalScore((prevState) => prevState + +selectedOptionValue);
-      setCommonScore((prevState) => [...prevState, +selectedOptionValue]);
+      setCommonScore((prevState) => [...prevState, selectedOption]);
       setTotalPartnerScore(
         (prevState) => prevState + +selectedOptionPartnerValue
       );
       setCommonPartnerScore((prevState) => [
         ...prevState,
-        +selectedOptionPartnerValue,
+        selectedPartnerOption,
       ]);
     }
     setPageNumber((prevState) => prevState + 1);
   };
-
   //added lodash/fp reduce
   const getMostFrequent = (arr) => {
     const hashmap = reduce((acc, val) => {
@@ -71,17 +70,16 @@ function App() {
     const common = getMostFrequent(commonScore);
     return pageContent.bodyBold
       .replace("<total_score>", totalScore.toString())
-      .replace("<common_score>", common.toString());
+      .replace("<common_score>", `"${common}"`);
   };
 
   const renderPartnerResults = () => {
     const commonPartner = getMostFrequent(commonPartnerScore);
-
     return pageContent.bodyBold
       .replace("Your", "Your Partner's")
       .replace("your", "")
       .replace("<total_score>", totalPartnerScore.toString())
-      .replace("<common_score>", commonPartner.toString());
+      .replace("<common_score>", `"${commonPartner}"`);
   };
 
   return (
