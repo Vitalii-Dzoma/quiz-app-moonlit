@@ -1,171 +1,200 @@
-import React, { useEffect, useState } from "react";
-import Start from "./components/Start";
-import Quiz from "./components/Quiz";
-import Result from "./components/Result";
+import "./App.css";
+import { data } from "./data";
+import { reduce } from "lodash/fp";
+import { useEffect, useState } from "react";
 
 function App() {
-  // All Quizs, Current Question, Index of Current Question, Answer, Selected Answer, Total Marks
-  const [quizs, setQuizs] = useState([]);
-  const [question, setQuesion] = useState({});
-  const [questionIndex, setQuestionIndex] = useState(1);
-  const [correctAnswer, setCorrectAnswer] = useState("");
-  const [selectedAnswer, setSelectedAnswer] = useState("");
-  const [firstValue, setFirstValue] = useState(0);
-  const [secondValue, setSecondValue] = useState(0);
-  const [myChosenValue, setMyChosenValue] = useState([]);
-  const [notMyChosenValue, setNotMyChosenValue] = useState([]);
-
-  const [marks, setMarks] = useState(0);
-  const [partnersMarks, setPartnersMarks] = useState(0);
-
-  // Display Controlling States
-  const [showStart, setShowStart] = useState(true);
-  const [showQuiz, setShowQuiz] = useState(false);
-  const [showResult, setShowResult] = useState(false);
-
-  // Load JSON Data
-  // useEffect(() => {
-  //   fetch("quiz.json")
-  //     .then((res) => res.json())
-  //     .then((data) => setQuizs(data));
-  // }, []);
+  const { pages } = data;
+  const [pageNumber, setPageNumber] = useState(0);
+  const [pageContent, setPageContent] = useState(pages[pageNumber]);
+  const [selectedOption, setSelectedOption] = useState("");
+  const [selectedPartnerOption, setSelectedPartnerOption] = useState("");
+  const [selectedOptionValue, setSelectedOptionValue] = useState();
+  const [selectedOptionPartnerValue, setSelectedOptionPartnerValue] =
+    useState();
+  const [totalScore, setTotalScore] = useState(0);
+  const [totalPartnerScore, setTotalPartnerScore] = useState(0);
+  const [commonScore, setCommonScore] = useState([]);
+  const [commonPartnerScore, setCommonPartnerScore] = useState([]);
 
   useEffect(() => {
-    fetch("quiz-data.json")
-      .then((res) => res.json())
-      .then((data) => setQuizs(data.pages));
-  }, []);
+    setPageContent(pages[pageNumber]);
+  }, [pageNumber]);
 
-  // Set a Single Question
   useEffect(() => {
-    if (quizs.length - 1 > questionIndex) {
-      setQuesion(quizs[questionIndex]);
-      console.log(question);
+    if (pageContent.defaultIndex) {
+      setSelectedOption(pageContent.options[pageContent.defaultIndex]);
+      setSelectedPartnerOption(pageContent.options[pageContent.defaultIndex]);
+      setSelectedOptionValue(pageContent.values[pageContent.defaultIndex]);
+      setSelectedOptionPartnerValue(
+        pageContent.values[pageContent.defaultIndex]
+      );
     }
-  }, [quizs, questionIndex]);
+  }, [pageContent]);
 
-  const transmitMyChoice = (event) => {
-    setFirstValue(event.target.value);
-
-    // console.log(event.target.value);
-    // console.log("Мой вібор", myChosenValue);
+  const handleInputChange = (e, option) => {
+    setSelectedOption(option);
+    setSelectedOptionValue(e.target.value);
   };
 
-  const transmitChoice = (event) => {
-    setSecondValue(event.target.value);
-    // console.log(event.target.value);
-    // console.log("Выбор партнера", notMyChosenValue);
+  const handleInputPartnerChange = (e, option) => {
+    setSelectedPartnerOption(option);
+    setSelectedOptionPartnerValue(e.target.value);
   };
 
-  // Start Quiz
-  const startQuiz = () => {
-    setShowStart(false);
-    setShowQuiz(true);
-  };
-
-  // Check Answer
-  const checkAnswer = (event, selected) => {
-    if (!selectedAnswer) {
-      setCorrectAnswer(question.answer);
-      setSelectedAnswer(selected);
-
-      if (selected === question.answer) {
-        event.target.classList.add("bg-success");
-        setMarks(marks + 5);
-      } else {
-        event.target.classList.add("bg-danger");
-      }
+  const handleNextClick = () => {
+    if (pageContent.options) {
+      setTotalScore((prevState) => prevState + +selectedOptionValue);
+      setCommonScore((prevState) => [...prevState, +selectedOptionValue]);
+      setTotalPartnerScore(
+        (prevState) => prevState + +selectedOptionPartnerValue
+      );
+      setCommonPartnerScore((prevState) => [
+        ...prevState,
+        +selectedOptionPartnerValue,
+      ]);
     }
+    setPageNumber((prevState) => prevState + 1);
   };
 
-  //Count result
-  const findMostOftenElement = (arr) => {
-    const reps = arr.reduce((accum, item) => {
-      const newCount = (accum[item] || 0) + 1;
-      return { ...accum, [item]: newCount };
-    }, {});
-    const maxTimes = Math.max.apply(null, Object.values(reps));
-    const [recordItem] = Object.entries(reps).find(
-      ([, val]) => val === maxTimes
+  const getMostFrequent = (arr) => {
+    const hashmap = reduce((acc, val) => {
+      acc[val] = (acc[val] || 0) + 1;
+      return acc;
+    }, {})(arr);
+    return Object.keys(hashmap).reduce((a, b) =>
+      hashmap[a] > hashmap[b] ? a : b
     );
-
-    // console.log(recordItem + " ( " + maxTimes + " times ) ");
-    return recordItem;
+  };
+  const renderResults = () => {
+    const common = getMostFrequent(commonScore);
+    return pageContent.bodyBold
+      .replace("<total_score>", totalScore.toString())
+      .replace("<common_score>", common.toString());
   };
 
-  // Next Quesion
-  const nextQuestion = () => {
-    setCorrectAnswer("");
-    setSelectedAnswer("");
-    const wrongBtn = document.querySelector("button.bg-danger");
-    wrongBtn?.classList.remove("bg-danger");
-    const rightBtn = document.querySelector("button.bg-success");
-    rightBtn?.classList.remove("bg-success");
-    setQuestionIndex(questionIndex + 1);
-    setMyChosenValue([...myChosenValue, firstValue]);
-    setNotMyChosenValue([...notMyChosenValue, secondValue]);
-    console.log(myChosenValue);
-    console.log(notMyChosenValue);
-  };
+  const renderPartnerResults = () => {
+    const commonPartner = getMostFrequent(commonPartnerScore);
 
-  // Show Result
-  const showTheResult = () => {
-    setShowResult(true);
-    setShowStart(false);
-    setShowQuiz(false);
-    setMarks(findMostOftenElement(myChosenValue));
-    setPartnersMarks(findMostOftenElement(notMyChosenValue));
-  };
-
-  // Start Over
-  const startOver = () => {
-    setShowStart(false);
-    setShowResult(false);
-    setShowQuiz(true);
-    setCorrectAnswer("");
-    setSelectedAnswer("");
-    setQuestionIndex(0);
-    setMarks(0);
-    setMyChosenValue([]);
-    setNotMyChosenValue([]);
-    const wrongBtn = document.querySelector("button.bg-danger");
-    wrongBtn?.classList.remove("bg-danger");
-    const rightBtn = document.querySelector("button.bg-success");
-    rightBtn?.classList.remove("bg-success");
+    return pageContent.bodyBold
+      .replace("Your", "Your Partner's")
+      .replace("your", "")
+      .replace("<total_score>", totalPartnerScore.toString())
+      .replace("<common_score>", commonPartner.toString());
   };
 
   return (
-    <>
-      {/* Welcome Page */}
-      <Start startQuiz={startQuiz} showStart={showStart} />
+    <section className="bg-dark text-white">
+      <div className="container">
+        <div className="row vh-100 align-items-center justify-content-center">
+          <div className="col-lg-8">
+            <div
+              className="card p-4"
+              style={{ background: "#3d3d3d", borderColor: "#646464" }}
+            >
+              <div className="gap-md-3">
+                {pageContent.body && (
+                  <div className="body">
+                    {pageContent.body.replace("<partner name>", "Partner")}
+                  </div>
+                )}
+                {pageContent.bodyBold && (
+                  <div className="body-bold">{renderResults()}</div>
+                )}
+                {pageContent.bodyBold && (
+                  <div className="body-bold">{renderPartnerResults()}</div>
+                )}
 
-      {/* Quiz Page */}
-      <Quiz
-        showQuiz={showQuiz}
-        question={question}
-        quizs={quizs}
-        checkAnswer={checkAnswer}
-        correctAnswer={correctAnswer}
-        selectedAnswer={selectedAnswer}
-        questionIndex={questionIndex}
-        nextQuestion={nextQuestion}
-        showTheResult={showTheResult}
-        transmitMyChoice={transmitMyChoice}
-        transmitChoice={transmitChoice}
-        oftenGoal={findMostOftenElement}
-      ></Quiz>
+                <h3 className="label" style={{ margin: 50 }}>
+                  {pages?.indexOf(pageContent) <= 12
+                    ? pageContent.label
+                    : pageContent.footnotes}
+                </h3>
 
-      {/* Result Page */}
-      <Result
-        showResult={showResult}
-        quizs={quizs}
-        marks={marks}
-        partnersMarks={partnersMarks}
-        startOver={startOver}
-        myValue={myChosenValue}
-        partnerValue={notMyChosenValue}
-      />
-    </>
+                <div className="d-flex justify-content-between gap-md-3">
+                  <h5 className="mb-2 fs-normal lh-base">
+                    {selectedOption?.label}
+                  </h5>
+                  <h5
+                    style={{
+                      color: "#60d600",
+                      width: "100px",
+                      textAlign: "right",
+                    }}
+                  >
+                    {pages?.indexOf(pageContent)} / {pages?.length - 1}
+                  </h5>
+                </div>
+
+                {pageContent.options && (
+                  <div
+                    style={{
+                      display: "flex",
+                      justifyContent: "center",
+                      columnGap: 40,
+                      marginBottom: 50,
+                    }}
+                  >
+                    {" "}
+                    {pageContent.options.map((option, index) => (
+                      <label
+                        htmlFor={option}
+                        key={option}
+                        style={{ display: "flex", flexDirection: "column" }}
+                      >
+                        {option}
+                        <input
+                          id={option}
+                          type="checkbox"
+                          value={pageContent.values[index]}
+                          checked={option === selectedOption}
+                          onChange={(e) => handleInputChange(e, option)}
+                        />
+                      </label>
+                    ))}
+                  </div>
+                )}
+                {pageContent.options && (
+                  <div
+                    style={{
+                      display: "flex",
+                      justifyContent: "center",
+                      columnGap: 40,
+                      marginBottom: 50,
+                    }}
+                  >
+                    {pageContent.options.map((option, index) => (
+                      <label
+                        htmlFor={option}
+                        key={option}
+                        style={{ display: "flex", flexDirection: "column" }}
+                      >
+                        {option}
+                        <input
+                          id={option}
+                          type="checkbox"
+                          value={pageContent.values[index]}
+                          checked={option === selectedPartnerOption}
+                          onChange={(e) => handleInputPartnerChange(e, option)}
+                        />
+                      </label>
+                    ))}
+                  </div>
+                )}
+                {pageContent.done && (
+                  <button
+                    className="btn py-2 w-100 mt-3 bg-primary text-light fw-bold"
+                    onClick={handleNextClick}
+                  >
+                    {pageContent.done}
+                  </button>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
   );
 }
 
